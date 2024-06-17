@@ -6,8 +6,8 @@ from pymongo import MongoClient
 def get_table(table_name, column_name):
     try:
         connection = mysql.connector.connect(host='mysql-analytic.da.svc.cluster.local',
-                                             user='root',
-                                             password='ihealth99')
+                                             user='',
+                                             password='')
 
         cursor = connection.cursor()
         sql_select_query = "SELECT " + column_name + " FROM UnifiedCare." + table_name
