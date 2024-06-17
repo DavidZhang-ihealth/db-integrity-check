@@ -1,12 +1,13 @@
 import os
+import sys
 import mysql.connector
 from pymongo import MongoClient
 
 def get_table(table_name, column_name):
     try:
         connection = mysql.connector.connect(host='mysql-analytic.da.svc.cluster.local',
-                                             user='',
-                                             password='')
+                                             user='root',
+                                             password='ihealth99')
 
         cursor = connection.cursor()
         sql_select_query = "SELECT " + column_name + " FROM UnifiedCare." + table_name
@@ -40,13 +41,16 @@ def extract_data_from_mongodb(mongo_uri, db_name, collection_name):
     print(data)
 
 
-def null_check(table_name, column):
-    # throws exception if any column entry returns null
-    record = get_table(table_name, column)
-    # TODO: extract column from column name
-    for i, row in enumerate(record) :
-        if row[0] == None: 
-            print(f"null check failed at row {i}, expected a gender but returned None")
+def null_check(table_name, column_name):
+    # returns EXIT_FAILURE
+    record = get_table(table_name, column_name)
+    for i, row in enumerate(record):
+        for j, entry in enumerate(row): 
+            if entry == None:
+                print(f"null check failed at Row {i}, Column {j}")
+                containsNull = True
     
+    return containsNull
 
-null_check("dim_patients", "gender")
+# Program entrypoint - edit this line
+null_check("dim_patients", "firstName, lastName, gender")
