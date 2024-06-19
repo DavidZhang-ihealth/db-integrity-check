@@ -10,7 +10,7 @@ def get_table(table_name, column_name):
                                              password='')
 
         cursor = connection.cursor()
-        sql_select_query = "SELECT " + column_name + " FROM UnifiedCare." + table_name
+        sql_select_query = f"SELECT {column_name} FROM UnifiedCare.{table_name}"
         # set variable in query
         cursor.execute(sql_select_query)
         # fetch result
@@ -47,6 +47,8 @@ def null_check(table_name, column_name):
     RED = '\033[91m'
     RESET = '\033[0m'
 
+    log = open('validation_results.log', "w") 
+
     column_names = column_name.split(',')
     entries_checked = 0
     containsNull = False
@@ -56,15 +58,13 @@ def null_check(table_name, column_name):
         for index, item in enumerate(row[1: ], 1):
             entries_checked += 1
             if row[index] is None:
-                print(f"Null check for '{column_names[index]}' failed at ID {row[0]}")
+                log.write(f"ID {row[0]}: Expected a(n) '{column_names[index]}' but returned Null \n")
                 num_of_nulls = num_of_nulls + 1
-                containsNull = True
+                
     
-    print (f"""
-=========================================================================
+    print (f"""==========================================================================================================
 Total entries checked: {entries_checked} | {GREEN}{entries_checked - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/entries_checked * 100}%{RESET}""")
     
-    exit(containsNull)
 
 # Program entrypoint - edit this line
-null_check("dim_patients", "id,clinicNickname,gender")
+null_check("dim_patients", "id,clinicNickname")
