@@ -16,7 +16,6 @@ def get_table(table_name, column_name):
         # fetch result
         record = cursor.fetchall()
 
-
         return record
 
     except mysql.connector.Error as error:
@@ -42,15 +41,27 @@ def extract_data_from_mongodb(mongo_uri, db_name, collection_name):
 
 
 def null_check(table_name, column_name):
-    # returns EXIT_FAILURE
-    record = get_table(table_name, column_name)
-    for i, row in enumerate(record):
-        for j, entry in enumerate(row): 
-            if entry == None:
-                print(f"null check failed at Row {i}, Column {j}")
-                containsNull = True
     
-    return containsNull
+    GREEN = '\033[92m'
+    RED = '\033[91m'
+    RESET = '\033[0m'
+
+    column_names = column_name.split(',')
+
+    containsNull = False
+    num_of_nulls = 0
+    record = get_table(table_name, column_name)
+    for row in record:
+        if row[1] is None:
+            print(f"Null check for '{column_names[1]}' failed at ID {row[0]}")
+            num_of_nulls = num_of_nulls + 1
+            containsNull = True
+    
+    print (f"""
+=========================================================================
+Total rows checked: {len(record)} | {GREEN}{len(record) - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/len(record) * 100}%{RESET}""")
+    
+    exit(containsNull)
 
 # Program entrypoint - edit this line
-null_check("dim_patients", "firstName, lastName, gender")
+null_check("dim_patients", "id,assignedtoRD")
