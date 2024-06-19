@@ -19,7 +19,8 @@ def get_table(table_name, column_name):
         return record
 
     except mysql.connector.Error as error:
-        print("Failed to get record from MySQL table: {}".format(error))
+        print(f"{'\033[91m'}Failed to get record from MySQL table: {error}")
+
 
     finally:
         if connection.is_connected():
@@ -47,21 +48,23 @@ def null_check(table_name, column_name):
     RESET = '\033[0m'
 
     column_names = column_name.split(',')
-
+    entries_checked = 0
     containsNull = False
     num_of_nulls = 0
     record = get_table(table_name, column_name)
     for row in record:
-        if row[1] is None:
-            print(f"Null check for '{column_names[1]}' failed at ID {row[0]}")
-            num_of_nulls = num_of_nulls + 1
-            containsNull = True
+        for index, item in enumerate(row[1: ], 1):
+            entries_checked += 1
+            if row[index] is None:
+                print(f"Null check for '{column_names[index]}' failed at ID {row[0]}")
+                num_of_nulls = num_of_nulls + 1
+                containsNull = True
     
     print (f"""
 =========================================================================
-Total rows checked: {len(record)} | {GREEN}{len(record) - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/len(record) * 100}%{RESET}""")
+Total entries checked: {entries_checked} | {GREEN}{entries_checked - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/entries_checked * 100}%{RESET}""")
     
     exit(containsNull)
 
 # Program entrypoint - edit this line
-null_check("dim_patients", "id,assignedtoRD")
+null_check("dim_patients", "id,clinicNickname,gender")
