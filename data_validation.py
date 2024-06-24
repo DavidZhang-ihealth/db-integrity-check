@@ -7,7 +7,7 @@ def get_table(table_name, column_name):
     try:
         connection = mysql.connector.connect(host='mysql-analytic.da.svc.cluster.local',
                                              user='',
-                                             password='')
+                                             password='ihealth99')
 
         cursor = connection.cursor()
         sql_select_query = f"SELECT id,{column_name} FROM UnifiedCare.{table_name}"
@@ -68,15 +68,16 @@ def null_check(table_name):
             containsNull = True
                     
         summary = f"""==========================================================================================================
-    Total entries checked: {entries_checked} | {GREEN}{entries_checked - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/entries_checked * 100}%{RESET}"""
+Total entries checked: {entries_checked} | {GREEN}{entries_checked - num_of_nulls} Passed{RESET} | {RED}{num_of_nulls} Failed{RESET} | Failure Rate : {RED}{num_of_nulls/entries_checked * 100}%{RESET}"""
         
         summary_no_color = f"""==========================================================================================================
-    Total entries checked: {entries_checked} | {entries_checked - num_of_nulls} Passed | {num_of_nulls} Failed | Failure Rate : {num_of_nulls/entries_checked * 100}%"""
+Total entries checked: {entries_checked} | {entries_checked - num_of_nulls} Passed | {num_of_nulls} Failed | Failure Rate : {num_of_nulls/entries_checked * 100}%"""
         
         print (summary)
         log.write(summary_no_color)
-    except:
+    except TypeError:
         log.write(f"Error: Failed to parse the column '{column_name}'")
+        exit(1)
 
     
 # Program entrypoint - edit this line
