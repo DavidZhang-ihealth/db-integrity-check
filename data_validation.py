@@ -7,7 +7,7 @@ def get_table(table_name, column_name):
     try:
         connection = mysql.connector.connect(host='mysql-analytic.da.svc.cluster.local',
                                              user='',
-                                             password='ihealth99')
+                                             password='')
 
         cursor = connection.cursor()
         sql_select_query = f"SELECT id,{column_name} FROM UnifiedCare.{table_name}"
